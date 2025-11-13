@@ -1,15 +1,17 @@
 //placing orders using cod
 import orderModel from "../models/orderModel.js";
+import userModel from "../models/userModel.js";
+
 const placeOrder = async(req,res) =>{
     try {
-        const {userId,items,amount,address}= req.body;
+        const {userId,items,amount,address,paymentMethod}= req.body;
 
         const orderData = {
             userId,
             items,
             address,
             amount,
-            PaymentMethod:'COD',
+            paymentMethod,
             payment:false,
             date: Date.now()
         }
@@ -40,12 +42,26 @@ const placeOrderRazorpay = async(req,res) =>{
 
 // all order data for admin panel
 const allOrders = async(req,res)=>{
-
+    try {
+        const orders = await orderModel.find({});
+        res.json({success:true,orders});
+    } catch (error) {
+          console.log(error);
+        res.json({success:false,message: error.message});
+    }
 }
 
 // for user data in frontend
 const userOrders = async(req,res)=>{
-    
+    try {
+         const {userId} = req.body;
+         const orders = await orderModel.find({userId})
+         res.json({success: true,orders});
+    } catch (error) {
+         console.log(error);
+        res.json({success:false,message: error.message});
+        
+    }
 }
 
 //update status of order from admin
